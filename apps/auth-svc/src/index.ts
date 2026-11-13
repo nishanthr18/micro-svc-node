@@ -3,6 +3,7 @@ import express  from "express";
 import { resolve } from "node:path";
 import {AppError, errorHandler, httpLogger, logger, successResponse} from 'shared'
 import { authRoutes } from "./routes/auth.routes";
+import cookieParser from 'cookie-parser';
 
 config({path: resolve(process.cwd(), '.env')})
 config({path: resolve(process.cwd(), '../../.env')})
@@ -13,6 +14,7 @@ const app = express();
 
 app.use(httpLogger);
 app.use(express.json());
+app.use(cookieParser());
 
 app.get("/health", (_req, res)=> {
     successResponse(res, {service: "auth-svc"})

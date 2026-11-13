@@ -2,7 +2,7 @@ import { AppError } from "shared";
 import { User } from "../types/auth.types";
 import { createUser, findByEmail, getUser } from "../repositories/user.repo";
 import bcrypt from 'bcryptjs';
-import jwt from 'jsonwebtoken';
+import jwt, { JwtPayload } from 'jsonwebtoken';
 
 export const registerService = async (
     payload: User
@@ -69,4 +69,24 @@ export const loginUserService = async (payload: { email: string, password: strin
     )
     
     return token;
+};
+
+export const getMeService = async (token: string) => {
+  try {
+    const jwtSecret = process.env.JWT_SECRET!;
+
+    const user = await jwt.verify(
+      token,
+      jwtSecret
+    ) as JwtPayload;
+
+    return user;
+  } catch (error) {
+    console.log({error})
+    throw new AppError(
+      401,
+      "Invalid or expired token",
+      true
+    );
+  }
 };

@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express'
-import { loginUserService, registerService } from '../services/auth.service';
-import { successResponse } from 'shared';
+import { getMeService, loginUserService, registerService } from '../services/auth.service';
+import { AppError, successResponse } from 'shared';
 
 
 export const createUserController = async (req: Request, res: Response, next: NextFunction) => {
@@ -14,19 +14,49 @@ export const createUserController = async (req: Request, res: Response, next: Ne
 };
 
 export const loginUserController = async (req: Request, res: Response, next: NextFunction) => {
-    console.log(req.body)
     try {
         const token = await loginUserService(req.body);
+
         res.cookie('token', token, {
             httpOnly: true,
             secure: process.env.NODE_ENV === 'production',
             sameSite: 'strict',
             maxAge: 3600000
         });
-        return successResponse(res, token);
+
+        return successResponse(res, { token });
 
     } catch (e) {
         console.log({ e });
         next(e);
     }
-}
+};
+
+export const getMeController = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const token =
+      req.headers.authorization?.startsWith("Bearer ")
+        ? req.headers.authorization.split(" ")[1]
+        : req.cookies?.token;
+
+    if (!token) {
+      throw new AppError(
+        401,
+        "Authentication token missing or invalid",
+        true
+      );
+    }
+
+    const user = await getMeService(token);
+    console.log({user})
+
+    return successResponse(res, user);
+  } catch (error) {
+    next(error);
+  }
+};
+

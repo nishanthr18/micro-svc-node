@@ -14,11 +14,12 @@
   },
   "type": "commonjs",
   "devDependencies": {
+    "@types/cookie-parser": "^1.4.10",
     "tsx": "^4.23.15",
     "typescript": "^7.0.2"
   },
   "dependencies": {
-    "dotenv": "^18.0.10",
-    "shared": "^1.0.0"
+    "cookie-parser": "^1.4.7",
+    "dotenv": "^18.0.10"
   }
 }
