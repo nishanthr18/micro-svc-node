@@ -10,6 +10,7 @@
   ],
   "scripts": {
     "dev:auth": "npm run dev -w auth-svc",
+    "dev:ag": "npm run dev -w api-gateway",
     "db:migrate": "tsx scripts/db-migrate.ts"
   },
   "type": "commonjs",

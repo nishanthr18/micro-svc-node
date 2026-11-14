@@ -7,7 +7,7 @@ import jwt, { JwtPayload } from 'jsonwebtoken';
 export const registerService = async (
     payload: User
 ) => {
-
+    console.log("inside register service")
     if (!payload) {
         throw new AppError(
             400,

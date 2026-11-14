@@ -4,6 +4,8 @@ import { AppError, successResponse } from 'shared';
 
 
 export const createUserController = async (req: Request, res: Response, next: NextFunction) => {
+        console.log(req.body)
+
     try {
         const payload = req.body;
         const user = await registerService(payload);
