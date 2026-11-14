@@ -1,5 +1,5 @@
-import {config} from 'dotenv';
-import {resolve} from 'node:path';
+import { config } from 'dotenv';
+import { resolve } from 'node:path';
 import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
@@ -7,10 +7,11 @@ import rateLimit, { MINUTE } from 'express-rate-limit';
 import cookieParser from 'cookie-parser';
 import { AppError, errorHandler, httpLogger, logger, successResponse } from 'shared';
 import { createProxyMiddleware } from 'http-proxy-middleware';
+import { gatewayAuth } from './middleware/gateway-auth';
 
 
-config({path: resolve(process.cwd(), ".env")});
-config({path: resolve(process.cwd(), "../../.env")});
+config({ path: resolve(process.cwd(), ".env") });
+config({ path: resolve(process.cwd(), "../../.env") });
 
 const PORT = process.env.API_GATEWAY_PORT || 3000;
 
@@ -29,18 +30,18 @@ app.use(rateLimit({
 }));
 app.use(httpLogger);
 app.use('/health', (_req, res) => {
-    successResponse(res, {service: "API-GATEWAY"})
+    successResponse(res, { service: "API-GATEWAY" })
 });
-app.use('/auth', createProxyMiddleware({
+app.use('/auth', gatewayAuth, createProxyMiddleware({
     target: AUTH_SVC_URL,
     changeOrigin: true,
     pathRewrite: path => {
-        console.log("/auth${path}",  `/auth${path}`);
-        return  `/auth${path}`
+        console.log("/auth${path}", `/auth${path}`);
+        return `/auth${path}`
     }
 }))
 app.use(express.json());
 app.use((_req, _res, next) => next(new AppError(404, 'Route not found')));
 app.use(errorHandler);
 
-app.listen(PORT, () => logger.info('API Gateway running on PORT '+PORT));
+app.listen(PORT, () => logger.info('API Gateway running on PORT ' + PORT));
